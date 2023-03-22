@@ -3,7 +3,7 @@ public class Game {
         Board gameBoard = new Board();
         Player[] players = new Player[2];
         players[0] = new HumanPlayer(-1);
-        players[1] = new HumanPlayer(1);
+        players[1] = new AIPlayer(1, 1);
 
         int nowPlayerIdentity = -1;
         int nowPlayerIndex = 0;
@@ -21,14 +21,13 @@ public class Game {
                 int[] input = gameBoard.getChessPointList(players[nowPlayerIndex].input(gameBoard));
                 gameBoard.putChess(input[0], input[1], nowPlayerIdentity);
 
-                nowPlayerIdentity = -nowPlayerIdentity;
-                nowPlayerIndex = 1 - nowPlayerIndex;
-
             } else if (continuity){
                 continuity = false;
             } else {
                 break;
             }
+            nowPlayerIdentity = -nowPlayerIdentity;
+            nowPlayerIndex = 1 - nowPlayerIndex;
         } while (true);
 
         System.out.println("Game is over!");

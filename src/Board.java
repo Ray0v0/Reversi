@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 public class Board {
     private final int size = 8;
@@ -12,6 +11,11 @@ public class Board {
         storage[5][4] = -1;
         storage[5][5] = 1;
     }
+    public Board(Board gameBoard) {
+        for (int i = 1; i <= size; i++) {
+            this.storage[i] = gameBoard.storage[i].clone();
+        }
+    }
     public int getSize() {
         return size;
     }
@@ -23,6 +27,9 @@ public class Board {
         ret[0] = chessPointList[index][0];
         ret[1] = chessPointList[index][1];
         return ret;
+    }
+    public int[][] getChessPointList() {
+        return chessPointList;
     }
     public int getStorage(int x, int y) {
         return storage[x][y];
@@ -135,7 +142,7 @@ public class Board {
     }
     public boolean isLegalLeft(int x, int y, int identity) {
         boolean ret = false;
-        for (int i = 1; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             if (y - i < 1) {
                 ret = false;
                 break;
@@ -152,7 +159,7 @@ public class Board {
     }
     public boolean isLegalRight(int x, int y, int identity) {
         boolean ret = false;
-        for (int i = 1; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             if (y + i > size) {
                 ret = false;
                 break;
@@ -169,7 +176,7 @@ public class Board {
     }
     public boolean isLegalUp(int x, int y, int identity) {
         boolean ret = false;
-        for (int i = 1; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             if (x - i < 1) {
                 ret = false;
                 break;
@@ -186,7 +193,7 @@ public class Board {
     }
     public boolean isLegalDown(int x, int y, int identity) {
         boolean ret = false;
-        for (int i = 1; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             if (x + i > size) {
                 ret = false;
                 break;
@@ -203,7 +210,7 @@ public class Board {
     }
     public boolean isLegalUpRight(int x, int y, int identity) {
         boolean ret = false;
-        for (int i = 1; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             if (y + i > size || x - i < 1) {
                 ret = false;
                 break;
@@ -220,7 +227,7 @@ public class Board {
     }
     public boolean isLegalUpLeft(int x, int y, int identity) {
         boolean ret = false;
-        for (int i = 1; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             if (y - i < 1 || x - i < 1) {
                 ret = false;
                 break;
@@ -237,7 +244,7 @@ public class Board {
     }
     public boolean isLegalDownRight(int x, int y, int identity) {
         boolean ret = false;
-        for (int i = 1; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             if (y + i > size || x + i > size) {
                 ret = false;
                 break;
@@ -254,7 +261,7 @@ public class Board {
     }
     public boolean isLegalDownLeft(int x, int y, int identity) {
         boolean ret = false;
-        for (int i = 1; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             if (y - i < 1 || x + i > size) {
                 ret = false;
                 break;
@@ -269,14 +276,16 @@ public class Board {
         }
         return ret;
     }
-    public boolean isSideBySide(int x, int y, int identity) {
-        return storage[x + 1][y] == -identity || storage[x - 1][y] == -identity ||
-                storage[x][y + 1] == -identity || storage[x][y - 1] == -identity ||
-                storage[x + 1][y + 1] == -identity || storage[x + 1][y - 1] == -identity ||
-                storage[x - 1][y + 1] == -identity || storage[x - 1][y - 1] == -identity;
-    }
+
+//    public boolean isSideBySide(int x, int y, int identity) {
+//        return storage[x + 1][y] == -identity || storage[x - 1][y] == -identity ||
+//                storage[x][y + 1] == -identity || storage[x][y - 1] == -identity ||
+//                storage[x + 1][y + 1] == -identity || storage[x + 1][y - 1] == -identity ||
+//                storage[x - 1][y + 1] == -identity || storage[x - 1][y - 1] == -identity;
+//    }
+
     public boolean isLegal(int x, int y, int identity) {
-        return isSideBySide(x, y, identity) && (isLegalRight(x, y ,identity) || isLegalLeft(x, y ,identity)
+        return (isLegalRight(x, y ,identity) || isLegalLeft(x, y ,identity)
                 || isLegalUp(x, y ,identity) || isLegalDown(x, y ,identity)
                 || isLegalUpRight(x, y ,identity) || isLegalDownRight(x, y ,identity)
                 || isLegalUpLeft(x, y ,identity) || isLegalDownLeft(x, y ,identity));
@@ -294,7 +303,7 @@ public class Board {
                 if (storage[i][j] == -1) {
                     s = "\033[97;1m X \033[0;0m";
                 } else if (storage[i][j] == 1) {
-                    s = "\033[34;1m O \033[0;0m";
+                    s = "\033[0;0m O \033[0;0m";
                 } else if (storageChessPoint[i][j]){
                     s = "\033[41m E \033[0m";
                     for (int k = 1; k <= countChessPoint; k++) {
@@ -337,8 +346,9 @@ public class Board {
             }
         }
     }
-    public int theWinner() {
-        int countBlack = 0, countWhite = 0, ret = 0;
+    public int[] countChess() {
+        int countBlack = 0, countWhite = 0;
+        int[] ret = new int[2];
         for (int i = 1; i <= size; i++) {
             for (int j = 1; j <= size; j++) {
                 if (storage[i][j] == -1) {
@@ -348,12 +358,31 @@ public class Board {
                 }
             }
         }
+        ret[0] = countBlack;
+        ret[1] = countWhite;
+        return ret;
+    }
+    public int theWinner() {
+        int ret = 0;
+        int[] count = countChess();
+        int countBlack = count[0];
+        int countWhite = count[1];
         if (countBlack > countWhite) {
             ret = -1;
         } else if (countBlack < countWhite) {
             ret = 1;
-        } else {
-            ret = 0;
+        }
+        return ret;
+    }
+    public boolean isEnd() {
+        boolean ret = false;
+        int countChessPointBlack, countChessPointWhite;
+        checkChessPoint(-1);
+        countChessPointBlack = countChessPoint;
+        checkChessPoint(1);
+        countChessPointWhite = countChessPoint;
+        if (countChessPointBlack == 0 && countChessPointWhite == 0) {
+            ret = true;
         }
         return ret;
     }
